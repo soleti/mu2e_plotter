@@ -4,8 +4,8 @@
 """@package plotter
 Plotter for searchingfornues TrkAna TTree
 
-This module produces plot from the TTree produced by the
-searchingfornues framework (https://github.com/ubneutrinos/searchingfornues)
+This module plots variables from the TTree produced by the
+TrkAna module of the Mu2e offline (https://mu2ewiki.fnal.gov/wiki/TrkAna)
 
 Example:
     my_plotter = plotter.Plotter(samples, weights)
