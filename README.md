@@ -8,7 +8,7 @@ import uproot
 file = uproot.open("trkana-mc.root")
 trkananeg = file["TrkAnaNeg"]["trkana"]
 
-df = trkananeg.pandas.df(flatname=default_flatname, flatten=False)
+df = trkananeg.pandas.df(flatten=False)
 ```
 
 The plotter class is then instantied as:
