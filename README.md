@@ -1,6 +1,6 @@
 # Mu2e TrkAna plotter
 
-This class allows you to produce plots of the variable stored in TrkAna TTrees.
+This class allows you to produce plots of the variable stored in [TrkAna](https://mu2ewiki.fnal.gov/wiki/TrkAna) TTrees.
 The instantion requires a dictionary with a pandas dataframe. You can convert a ROOT TTree into a pandas dataframe using [uproot](https://github.com/scikit-hep/uproot):
 
 ```python
@@ -21,7 +21,7 @@ weights = {'mc': 1}
 my_plotter = plotter.Plotter(samples, weights)
 ```
 
-The main method is `plot_variable` which can manipulate different variables and apply queries to the dataframe. It also possible to categorize the events according to the PDG code (`demcgen_pdg`) or the GenID code (`demcgen_gen`).
+The main method is `plot_variable` which can manipulate different variables and apply queries to the dataframe. It also possible to categorize the events according to the PDG code (`demcgen_pdg`) or the [GenID](https://github.com/Mu2e/Offline/blob/master/MCDataProducts/inc/GenId.hh) code (`demcgen_gen`).
 
 This example shows how to plot the reconstructed momentum categorized by GenID code:
 ```python
