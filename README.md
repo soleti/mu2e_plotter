@@ -21,7 +21,7 @@ weights = {'mc': 1}
 my_plotter = plotter.Plotter(samples, weights)
 ```
 
-The main method is `plot_variable` which can manipulate different variables and apply queries to the dataframe. It also possible to categorize the events according to the PDG code (`demcgen_pdg`) or the [GenID](https://github.com/Mu2e/Offline/blob/master/MCDataProducts/inc/GenId.hh) code (`demcgen_gen`).
+The main method is `plot_variable` which can manipulate different variables and query the dataframe. It is also possible to categorize the events according to the PDG code (`demcgen_pdg`) or the [GenID](https://github.com/Mu2e/Offline/blob/master/MCDataProducts/inc/GenId.hh) code (`demcgen_gen`).
 
 This example shows how to plot the reconstructed momentum categorized by GenID code:
 ```python
