@@ -13,6 +13,8 @@ df = trkananeg.pandas.df(flatname=default_flatname, flatten=False)
 
 The plotter class is then instantied as:
 ```python
+import plotter
+
 samples = {'mc': df}
 weights = {'mc': 1}
 
@@ -23,9 +25,9 @@ The main method is `plot_variable` which can manipulate different variables and 
 
 This example shows how to plot the reconstructed momentum categorized by GenID code:
 ```python
-fig, ax = my_plotter.plot_variable("deent_mom",
+fig, ax = my_plotter.plot_variable("deent.mom",
                                    title="Reco. momentum [GeV]",
-                                   cat_var="demcgen_gen",
+                                   cat_var="demcgen.gen",
                                    x_range=(95,110),
                                    bins=30)
 ax.set_yscale('log')
