@@ -34,4 +34,4 @@ ax.set_yscale('log')
 ax.set_ylim(bottom=0.5, top=5e5)
 ```
 
-More information can be found in `Example.ipynb`.
+More information can be found in [Example.ipynb](https://github.com/soleti/mu2e_plotter/blob/master/Example.ipynb).
