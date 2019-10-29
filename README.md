@@ -1,6 +1,6 @@
 # Mu2e TrkAna plotter
 
-This class allows you to produce plots of the variable stored in [TrkAna](https://mu2ewiki.fnal.gov/wiki/TrkAna) TTrees.
+	This class allows you to produce plots of the variable stored in [TrkAna](https://mu2ewiki.fnal.gov/wiki/TrkAna) TTrees.
 The instantion requires a dictionary with a pandas dataframe. You can convert a ROOT TTree into a pandas dataframe using [uproot](https://github.com/scikit-hep/uproot):
 
 ```python
