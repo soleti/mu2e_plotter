@@ -25,11 +25,13 @@ The main method is `plot_variable` which can manipulate different variables and 
 
 This example shows how to plot the reconstructed momentum categorized by GenID code:
 ```python
-fig, ax = my_plotter.plot_variable("deent.mom",
-                                   title="Reco. momentum [GeV]",
-                                   cat_var="demcgen.gen",
-                                   x_range=(95,110),
-                                   bins=30)
+fig, ax = plt.subplots(1, 1)
+my_plotter.plot_variable(ax,
+                         "deent.mom",
+                         title="Reco. momentum [GeV]",
+                         cat_var="demcgen.gen",
+                         x_range=(95,110),
+                         bins=30)
 ax.set_yscale('log')
 ax.set_ylim(bottom=0.5, top=5e5)
 ```

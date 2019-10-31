@@ -76,9 +76,9 @@ class Plotter:
 
     pdg_colors = {
         -211: "#ff7f00",
-        -13: "#33a02c",
-        -11: "#1f78b4",
-        11: "#a6cee3",
+        -13: "#1f78b4",
+        -11: "#a6cee3",
+        11: "#33a02c",
         13: "#b2df8a",
         22: "#cab2d6",
         211: "#fdbf6f",
@@ -109,7 +109,7 @@ class Plotter:
         var_dict = OrderedDict()
         weight_dict = OrderedDict()
         grouped = df.groupby(cat_var)
-        for cat in sorted(df[cat_var].unique()):
+        for cat in sorted(df[cat_var].unique(), reverse=True):
             var_dict[cat] = grouped.get_group(cat).eval(var_name)
             weight_dict[cat] = grouped.get_group(cat)['weight']
 
@@ -117,12 +117,13 @@ class Plotter:
 
 
     def plot_variable(self,
+                      ax,
                       variable,
                       query="deent_mom>0",
                       title="",
                       cat_var="demcgen_gen",
                       x_range=[0, 0],
-                      bins=100):
+                      bins=20):
         """It plots the variable from the TTree, after applying an eventual query
 
         Args:
@@ -141,38 +142,59 @@ class Plotter:
         if not title:
             title = variable
 
-        mc = self.samples["mc"].query(query)
-
-        if x_range == [0, 0]:
-            x_range[0] = min(mc.eval(variable))
-            x_range[1] = max(mc.eval(variable))
+        if query:
+            if x_range == [0, 0]:
+                x_range = [
+                    min(self.samples["mc"].query(query)[variable]),
+                    max(self.samples["mc"].query(query)[variable])
+                ]
+            query += " & "
+        else:
+            if x_range == [0, 0]:
+                x_range = [
+                    min(self.samples["mc"][variable]),
+                    max(self.samples["mc"][variable])
+                ]
 
         # pandas bug https://github.com/pandas-dev/pandas/issues/16363
-        if x_range[0] >= 0 and x_range[1] >= 0:
-            if query:
-                query += "&"
+        if x_range[0] < 0 and x_range[1] > 0:
+            query += "%s <= %g & -%s <= -%g" % (variable,
+                                                x_range[1],
+                                                variable,
+                                                x_range[0])
+        elif x_range[0] > 0 and x_range[1] < 0:
+            query += "-%s >= -%g & %s >= %g" % (variable,
+                                                x_range[1],
+                                                variable,
+                                                x_range[0])
+        elif x_range[0] < 0 and x_range[1] < 0:
+            query += "-%s >= -%g & -%s <= -%g" % (variable,
+                                                  x_range[1],
+                                                  variable,
+                                                  x_range[0])
+        else:
             query += "%s <= %g & %s >= %g" % (variable,
                                               x_range[1],
                                               variable,
                                               x_range[0])
 
-        var_dict, weight_dict = self._categorize(mc, cat_var, variable)
+        mc = self.samples["mc"].query(query)
 
-        fig, ax1 = plt.subplots(1, 1, figsize=(6, 4))
+        var_dict, weight_dict = self._categorize(mc, cat_var, variable)
 
         cat_labels = [
             "%s: %.1f" % (self.labels[cat_var][c], sum(weight_dict[c]))
-            for c in sorted(mc[cat_var].unique())
+            for c in sorted(mc[cat_var].unique(), reverse=True)
         ]
 
-        cat_colors = [self.colors[cat_var].get(c) for c in sorted(mc[cat_var].unique())]
+        cat_colors = [self.colors[cat_var].get(c) for c in sorted(mc[cat_var].unique(), reverse=True)]
         if not var_dict.values():
             raise ValueError("No entries selected")
 
         total_array = np.concatenate(list(var_dict.values()))
         total_weight = np.concatenate(list(weight_dict.values()))
 
-        ax1.hist(var_dict.values(),
+        ax.hist(var_dict.values(),
                  stacked=True,
                  edgecolor=None,
                  linewidth=0,
@@ -182,27 +204,27 @@ class Plotter:
                  range=x_range,
                  bins=bins)
 
-        n_tot, tot_bins, patches = ax1.hist(total_array,
-                                            weights=total_weight,
-                                            histtype="step",
-                                            edgecolor="black",
-                                            range=x_range,
-                                            bins=bins)
+        n_tot, tot_bins, patches = ax.hist(total_array,
+                                           weights=total_weight,
+                                           histtype="step",
+                                           edgecolor="black",
+                                           range=x_range,
+                                           bins=bins)
 
         bincenters = 0.5 * (tot_bins[1:] + tot_bins[:-1])
         mc_err = np.sqrt(n_tot * self.weights["mc"] * self.weights["mc"])
 
-        ax1.bar(bincenters,
-                n_tot,
-                linewidth=0,
-                edgecolor=None,
-                width=0,
-                yerr=mc_err)
+        ax.bar(bincenters,
+               n_tot,
+               linewidth=0,
+               edgecolor=None,
+               width=0,
+               yerr=mc_err)
 
-        leg = ax1.legend(title=r'Mu2e preliminary')
+        leg = ax.legend(title=r'Mu2e preliminary')
         plt.setp(leg.get_title(), fontweight='bold')
-        ax1.set_ylim(0., max(n_tot)*1.5)
-        ax1.set_xlim(x_range[0], x_range[1])
+        ax.set_ylim(0., max(n_tot)*1.5)
+        ax.set_xlim(x_range[0], x_range[1])
 
         unit = title[title.find("[") + 1:title.find("]")
                      ] if "[" and "]" in title else ""
@@ -210,10 +232,9 @@ class Plotter:
         x_range_size = x_range[1] - x_range[0]
 
         if isinstance(bins, Iterable):
-            ax1.set_ylabel("N. Entries")
+            ax.set_ylabel("N. Entries")
         else:
-            ax1.set_ylabel("N. Entries / %g %s" % (x_range_size / bins, unit))
+            ax.set_ylabel("N. Entries / %g %s" % (x_range_size / bins, unit))
 
-        ax1.set_xlabel(title)
+        ax.set_xlabel(title)
 
-        return fig, ax1
