@@ -22,6 +22,7 @@ Attributes:
     pdg_colors (dict): Colors scheme for PDG codes
 """
 
+import math
 from collections import OrderedDict
 from collections.abc import Iterable
 import numpy as np
@@ -123,7 +124,7 @@ class Plotter:
                       title="",
                       cat_var="demcgen_gen",
                       x_range=[0, 0],
-                      bins=20):
+                      bins=0):
         """It plots the variable from the TTree, after applying an eventual query
 
         Args:
@@ -179,6 +180,9 @@ class Plotter:
                                               x_range[0])
 
         mc = self.samples["mc"].query(query)
+        
+        if not bins:
+            bins = int(math.sqrt(len(mc)))
 
         var_dict, weight_dict = self._categorize(mc, cat_var, variable)
 
@@ -195,14 +199,14 @@ class Plotter:
         total_weight = np.concatenate(list(weight_dict.values()))
 
         ax.hist(var_dict.values(),
-                 stacked=True,
-                 edgecolor=None,
-                 linewidth=0,
-                 label=cat_labels,
-                 color=cat_colors,
-                 weights=list(weight_dict.values()),
-                 range=x_range,
-                 bins=bins)
+                stacked=True,
+                edgecolor=None,
+                linewidth=0,
+                label=cat_labels,
+                color=cat_colors,
+                weights=list(weight_dict.values()),
+                range=x_range,
+                bins=bins)
 
         n_tot, tot_bins, patches = ax.hist(total_array,
                                            weights=total_weight,
